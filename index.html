@@ -1,0 +1,520 @@
+<!doctype html>
+<!--
+HIGHER PLACE CHURCH VOLUNTEER TOOL - HOW TO PUBLISH
+Upload ALL THREE files to the top level of your GitHub repository, no folders: index.html, worker.js, wrangler.jsonc
+Cloudflare: Workers & Pages > Create > connect your GitHub repo. Leave the build command empty and keep the deploy command as: npx wrangler deploy
+The first deploy creates a free D1 database automatically. Your site appears at a .workers.dev address.
+-->
+
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Higher Place Church Volunteer Tool – serve, say yes, join the Dream Team</title>
+<meta name="theme-color" content="#14121f">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap">
+<meta name="description" content="Find where you are needed at The Higher Place, say yes in seconds, and serve together. A church for every nation and generation.">
+<meta property="og:title" content="Higher Place Church Volunteer Tool">
+<meta property="og:description" content="Serve with us. See where you are needed and say yes in seconds.">
+<link rel="icon" href="logo.png">
+<style>
+:root{--coral:#e0573d;--orange:#f08a3c;--sun:#e9a23b;--mint:#3f8f6f;--sky:#3b82a8;--violet:#2f2a4a;--mag:#c2456b;--ink:#1c1a2b;--soft:#f6f4f0;--card:#fff;--mut:#6b6778;--rainbow:linear-gradient(90deg,#e0573d,#f08a3c,#e9a23b);--sh:0 1px 2px #1c1a2b0d,0 10px 32px #1c1a2b14}
+@media(prefers-color-scheme:dark){:root{--ink:#f3f0ea;--soft:#12101c;--card:#1c1a2b;--mut:#b3aec2;--violet:#6b5bd2;--sh:0 10px 32px #0006}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font:16px/1.6 "Plus Jakarta Sans","Avenir Next","Segoe UI",system-ui,sans-serif;color:var(--ink);background:var(--soft);padding-bottom:84px}
+h1,h2,h3{font-weight:800;letter-spacing:-.02em;line-height:1.12;margin:0 0 .5em}
+h1{font-size:clamp(2.3rem,8vw,4rem)}h2{font-size:1.7rem}h3{font-size:1.15rem}
+a{color:inherit}button,input,select,textarea{font:inherit}
+:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.wrap{max-width:1040px;margin:auto;padding:0 18px}
+header.top{position:sticky;top:0;z-index:30;background:#14121fe6;backdrop-filter:blur(14px);color:#fff}
+header.top .wrap{display:flex;align-items:center;gap:12px;height:64px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;margin-right:auto}
+.logo img{height:42px;width:auto;background:#fff;border-radius:10px;padding:3px 8px}.logo .lt{display:flex;flex-direction:column;line-height:1.1;font-weight:800}.logo .lt small{font-weight:600;opacity:.7;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+.logo .ln{display:none}.logo img[style*="none"]~.lt .ln{display:inline}
+.nav{position:fixed;bottom:0;left:0;right:0;z-index:30;display:flex;background:var(--card);box-shadow:0 -6px 24px #1c1a2b1f;padding-bottom:env(safe-area-inset-bottom)}
+.nav button{flex:1;min-height:62px;border:0;background:none;color:var(--mut);cursor:pointer;font-size:.68rem;font-weight:600;transition:.25s;position:relative}
+.nav button b{display:block;font-size:1.3rem;transition:transform .25s}
+.nav button[aria-current=page]{color:var(--ink)}.nav button[aria-current=page] b{transform:translateY(-3px) scale(1.15)}
+.nav button[aria-current=page]::after{content:"";position:absolute;top:0;left:30%;right:30%;height:3px;border-radius:0 0 4px 4px;background:var(--sun);animation:grow2 .35s}
+@keyframes grow2{from{left:50%;right:50%}}
+header .bell{background:#ffffff1f;color:#fff;box-shadow:none;padding:8px 14px;min-height:42px}
+@media(min-width:880px){.nav{position:static;box-shadow:none;background:none;gap:4px;padding:0}.nav button{flex:none;min-height:42px;padding:0 14px;border-radius:99px;color:#ffffffb3;font-size:.9rem}.nav button b{display:inline;font-size:1rem;margin-right:6px}.nav button:hover{background:#ffffff14;color:#fff}.nav button[aria-current=page]{background:#ffffff26;color:#fff}.nav button[aria-current=page] b{transform:none}.nav button[aria-current=page]::after{display:none}body{padding-bottom:0}.logo{margin-right:12px}header .bell{margin-left:auto}}
+.hero{position:relative;overflow:hidden;margin:16px 0 8px;border-radius:28px;color:#fff;background:linear-gradient(135deg,#14121f,#2f2a4a 55%,#4a2f4f);padding:44px 22px 28px;box-shadow:var(--sh)}
+.hc{position:relative;z-index:1;max-width:640px}.hero p{font-size:1.1rem;color:#ffffffcc;margin:0 0 1.4em}
+.blob{position:absolute;border-radius:50%;filter:blur(50px);opacity:.45;animation:drift 12s ease-in-out infinite alternate}
+.b1{width:260px;height:260px;background:var(--coral);right:-60px;top:-60px}.b2{width:220px;height:220px;background:var(--sun);right:30%;bottom:-90px;animation-delay:-4s}.b3{width:180px;height:180px;background:var(--mag);left:-50px;top:40%;animation-delay:-8s}
+@keyframes drift{to{transform:translate(50px,30px) scale(1.25)}}
+.chip{display:inline-block;padding:6px 14px;border-radius:99px;background:#ffffff1f;font-size:.85rem;font-weight:600;margin-bottom:16px;animation:floaty 4s ease-in-out infinite}
+@keyframes floaty{50%{transform:translateY(-4px)}}
+.rb{background:linear-gradient(90deg,#f6c768,#f08a3c,#e0573d,#f6c768);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:slide 5s linear infinite}
+@keyframes slide{to{background-position:200% 0}}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.stats{display:flex;gap:28px;margin-top:30px;padding-top:20px;border-top:1px solid #ffffff26}.stats b{display:block;font-size:2rem;font-weight:800;line-height:1}.stats small{color:#ffffffa6}
+.sec{margin:38px 0 14px;position:relative}.sec::after{content:"";display:block;width:44px;height:4px;border-radius:4px;background:var(--sun);margin-top:8px;animation:grow3 1s both}
+@keyframes grow3{from{width:0}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:99px;padding:13px 24px;min-height:48px;font-weight:700;color:#fff;background:var(--violet);cursor:pointer;text-decoration:none;box-shadow:0 8px 22px #2f2a4a40;transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden}
+.btn::before{content:"";position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(100deg,transparent,#ffffff55,transparent);transform:skewX(-20deg);transition:left .6s}
+.btn:hover::before{left:130%}.btn:hover{transform:translateY(-2px)}.btn:active{transform:scale(.96)}
+.btn.alt{background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 2px #1c1a2b26}.btn.gold{background:var(--sun);color:#1c1a2b;box-shadow:0 8px 24px #e9a23b66}
+.btn.ghost{background:#ffffff1a;color:#fff;box-shadow:inset 0 0 0 2px #ffffff55}
+.btn.yes{background:var(--mint)}.btn.no{background:var(--coral)}
+.card{background:var(--card);border-radius:20px;padding:20px;margin:0 0 16px;box-shadow:var(--sh);border:1px solid #1c1a2b0d}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}.grid>.card{margin:0}
+.rv{opacity:0;transform:translateY(24px) scale(.98);transition:opacity .6s,transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .3s}
+.rv.in{opacity:1;transform:none}.card.in:hover{transform:translateY(-4px);box-shadow:0 18px 44px #1c1a2b22}
+.card img{transition:transform .5s}.card:hover img{transform:scale(1.03)}
+.grid>*:nth-child(2){transition-delay:.08s}.grid>*:nth-child(3){transition-delay:.16s}
+.sk{height:200px;border-radius:20px;background:linear-gradient(100deg,#1c1a2b0d 30%,#1c1a2b1f 50%,#1c1a2b0d 70%);background-size:200% 100%;animation:shim 1.2s linear infinite}
+@keyframes shim{to{background-position:-200% 0}}
+.feat{border-top:5px solid var(--c)}.feat .ic{font-size:2rem;display:inline-block;animation:bob 3s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px) rotate(6deg)}}
+label{display:block;font-weight:600;margin:12px 0 4px;font-size:.92rem}
+input,select,textarea{width:100%;min-height:48px;padding:10px 14px;border-radius:14px;border:1.5px solid #1c1a2b26;background:var(--card);color:var(--ink);transition:border .2s,box-shadow .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--sun);box-shadow:0 0 0 4px #e9a23b33;outline:0}
+.row{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}
+.bar{height:10px;border-radius:99px;background:#1c1a2b14;overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--sun),var(--coral));transition:width .9s cubic-bezier(.2,.9,.3,1.2);animation:grow4 1.2s both}
+@keyframes grow4{from{width:0}}
+.tag{display:inline-block;padding:3px 12px;border-radius:99px;font-size:.78rem;font-weight:700;color:#fff;text-transform:capitalize}
+.full{background:var(--mint)}.gap{background:var(--coral)}
+.tl{border-left:5px solid var(--c);padding:4px 0 4px 16px;margin:0 0 14px}
+.empty{text-align:center;color:var(--mut);padding:30px 10px}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.days button{min-height:68px;border-radius:14px;border:2px solid transparent;cursor:pointer;color:var(--ink);background:var(--soft);font-size:.8rem;transition:transform .15s}.days button:hover:not(:disabled){transform:scale(1.06)}
+.days button[data-s=yes]{background:var(--mint);color:#fff}.days button[data-s=no]{background:var(--coral);color:#fff}
+.view{display:none}.view.on{display:block;animation:viewIn .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes viewIn{from{opacity:0;transform:translateY(14px)}}
+.pulse::after{content:"";position:absolute;inset:0;border-radius:99px;box-shadow:0 0 0 0 #e9a23bcc;animation:ring 1.8s ease-out infinite}
+@keyframes ring{to{box-shadow:0 0 0 14px #e9a23b00}}
+.hand{display:inline-block;font-size:2rem;animation:point 1s ease-in-out infinite}
+@keyframes point{50%{transform:translateX(10px)}}
+.step{display:flex;gap:14px;align-items:flex-start}.step .n{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;background:var(--c)}
+.conf{position:fixed;top:-20px;width:10px;height:14px;z-index:99;pointer-events:none;animation:fall 2.4s ease-in forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:.2}}
+dialog{border:0;border-radius:24px;padding:22px;max-width:560px;width:92vw;max-height:88vh;background:var(--card);color:var(--ink);box-shadow:0 24px 70px #0007;animation:pop2 .3s cubic-bezier(.2,.9,.3,1.3)}
+dialog::backdrop{background:#14121f99;backdrop-filter:blur(3px)}
+@keyframes pop2{from{opacity:0;transform:scale(.92) translateY(10px)}}
+.ft{margin-top:48px;padding:32px 0 100px;background:#14121f;color:#ffffffb3;font-size:.9rem}.ft a{color:#fff}.ft b{color:#fff}
+small,.mut{color:var(--mut)}
+summary{cursor:pointer;min-height:32px}
+.btn[style*="min-height:36px"],.btn[style*="min-height:40px"],.btn[style*="min-height:44px"]{padding:8px 16px!important;min-height:40px!important;font-size:.9rem}
+@media(min-width:880px){.ft{padding-bottom:32px}.hero{padding:64px 48px 36px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="#" data-go="home" aria-label="Higher Place Church home"><img src="logo.png" alt="" onerror="logoFB(this)"><span class="lt"><b class="ln">Higher Place</b><small>Volunteer Tool</small></span></a>
+<nav class="nav" aria-label="Main">
+<button data-go="home"><b>🏠</b>Home</button><button data-go="events"><b>🙌</b>Serve</button><button data-go="people"><b>💛</b>Team</button><button data-go="availability"><b>📅</b>Availability</button><button data-go="admin"><b>📊</b>Leaders</button><button data-go="guide"><b>💡</b>Help</button></nav>
+<button class="btn alt bell" data-go="inbox" id="bell" aria-label="Notifications">🔔<span id="bc"></span></button></div></header>
+
+<main class="wrap">
+<section id="home" class="view">
+ <div class="hero"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i>
+  <div class="hc"><span class="chip">☀️ Sundays 10:15am · Greenwich Picturehouse</span>
+  <h1>Find your place on the <span class="rb">Dream Team</span></h1>
+  <p>We love God, we love people, and we love life. Serving is how we live that out together. See where you are needed, say yes in seconds, and we will take care of the rest.</p>
+  <div class="cta"><button class="btn gold pulse" data-go="events">See where we need you</button><button class="btn ghost" data-go="availability">Set my availability</button></div>
+  <div class="stats"><div><b id="s1">0</b><small>ways to serve</small></div><div><b id="s2">0</b><small>spots to fill</small></div><div><b id="s3">0</b><small>yeses so far</small></div></div></div></div>
+ <h2 class="sec">Where we need you</h2>
+ <div id="homeEv"><div class="grid"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div></div>
+ <p><button class="btn alt" data-go="events">See more ways to serve</button></p>
+ <h2 class="sec">How serving works</h2>
+ <div class="grid">
+  <div class="card feat" style="--c:var(--sun)"><span class="ic">🔎</span><h3>Find your role</h3><p>Browse events, projects and activities. Each one shows exactly which roles still need people.</p></div>
+  <div class="card feat" style="--c:var(--mint)"><span class="ic">✅</span><h3>Say yes or no</h3><p>One tap, no pressure. Not available? Just say so, and add a reason only if you want to.</p></div>
+  <div class="card feat" style="--c:var(--coral)"><span class="ic">🌟</span><h3>Show up and shine</h3><p>Get reminders, see your schedule, and know your leader is behind you.</p></div>
+ </div>
+ <h2 class="sec">Latest updates</h2><div id="homeAct"></div>
+</section>
+
+<section id="events" class="view">
+ <h2>Ways to serve</h2><p class="mut">Events, projects and activities where your gifts make a difference. Find one and say yes.</p>
+ <button class="btn pulse" id="openNew">＋ Create new</button>
+ <dialog id="newDlg"><h3>Create new</h3><label for="ecat">Type</label><select id="ecat"><option value="event">Event</option><option value="project">Project</option><option value="activity">Activity</option></select>
+  <label for="en">Event name</label><input id="en" placeholder="Community celebration">
+  <div class="row"><div><label for="ed">Date</label><input id="ed" type="date"></div><div><label for="ev">Venue</label><input id="ev" placeholder="Church hall"></div></div>
+  <label for="edd">Event description</label><textarea id="edd" rows="3" style="width:100%;border-radius:14px;padding:10px 14px;border:2px solid #d8c9b8;background:var(--card);color:var(--ink);font:inherit"></textarea>
+  <label for="erc">RSVPs close (optional)</label><input id="erc" type="datetime-local">
+  <button class="btn alt" id="eip" style="margin-top:10px">Add event image</button>
+  <h3 style="margin-top:18px">Programme</h3><p class="mut">Add each segment with its times, then list the roles you need for it, one line per role with how many volunteers.</p>
+  <div id="pgm"></div><button class="btn alt" id="addPg">＋ Add programme item</button>
+  <p id="cerr" role="alert" style="color:var(--coral);font-weight:700"></p>
+  <p><button class="btn" id="saveEv">Create</button> <button class="btn alt" onclick="document.getElementById('newDlg').close()">Cancel</button></p></dialog>
+ <input id="q" type="search" placeholder="Search events, venues, roles" aria-label="Search events" style="margin-top:8px">
+ <div id="chips" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0"></div>
+ <div id="evList" class="grid"></div>
+</section>
+<section id="shared" class="view"></section>
+
+<section id="detail" class="view"></section>
+
+<section id="availability" class="view">
+ <h2>When can you serve?</h2>
+ <div class="card"><h3>My profile</h3><div id="prof"></div>
+  <label for="myn">My name</label><input id="myn" autocomplete="name"><button class="btn alt" style="margin-top:10px" id="myp">Upload my photo</button></div>
+ <p class="mut">Tap a day to cycle: unspecified, free, busy. You can plan up to two months ahead. Press Save when you finish.</p>
+ <div id="months"></div>
+ <p><span class="tag full">Free</span> <span class="tag gap">Busy</span></p>
+ <button class="btn pulse" id="saveAv">Save and tell the admin</button>
+ <div id="avDone"></div>
+</section>
+
+<section id="people" class="view">
+ <h2>Our Dream Team</h2>
+ <p class="mut">The people who serve. Add anyone you want to reach. Contact buttons open WhatsApp or your email app with the message ready to send. Details stay on this device.</p>
+ <div id="pList"></div>
+ <details class="card"><summary><b>＋ Add a person</b></summary>
+  <label for="pn">Name</label><input id="pn" autocomplete="off">
+  <label for="pw">WhatsApp number</label><input id="pw" type="tel" placeholder="07123 456789 or +44 7123 456789">
+  <label for="pe">Email (required)</label><input id="pe" type="email" required>
+  <label for="pr">Role</label><select id="pr"><option>Volunteer</option><option>Leader</option><option>Admin</option></select>
+  <p id="perr" role="alert" style="color:var(--coral);font-weight:700"></p>
+  <button class="btn" id="addP">Save person</button></details>
+ <div class="card"><h3>Groups</h3><div id="grList"></div>
+  <label for="gn">Group name</label><input id="gn" placeholder="Welcome team"><button class="btn alt" id="gp" style="margin-top:8px">Choose picture</button> <button class="btn" id="gs" style="margin-top:8px">Add group</button></div>
+ <div class="card"><h3>Message wording</h3>
+  <label for="tpl">Use {name}, {event} and {date}</label><input id="tpl">
+  <label for="cc">Country code for numbers starting with 0</label><input id="cc" inputmode="numeric"></div>
+</section>
+
+<section id="inbox" class="view"><h2>Notifications</h2><div id="nList"></div></section>
+
+<section id="admin" class="view">
+ <h2>Leaders’ dashboard</h2><p class="mut">See who has said yes, where the gaps are, and who to follow up with.</p>
+ <div id="kpi" class="grid"></div>
+ <div class="grid"><div class="card"><h3>Responses</h3><div id="donut"></div></div><div class="card"><h3>Staffing by event</h3><div id="evBars"></div></div></div>
+ <div class="card"><h3>Positions to fill</h3><div id="gaps"></div></div>
+ <div class="card"><h3>Users</h3><div id="users"></div><button class="btn alt" data-go="people">Add a user</button></div>
+ <div class="card"><h3>Reminders</h3>
+  <label for="rm">Message</label><input id="rm" placeholder="Please reply to the volunteer request">
+  <div class="row"><div><label for="rt">Send on</label><input id="rt" type="datetime-local"></div><div><label for="re">Event</label><select id="re"></select></div><div><label for="rw">Send to</label><select id="rw"><option value="all">Everyone</option><option value="pending">Only people who have not responded</option></select></div></div>
+  <p id="rerr" role="alert" style="color:var(--coral);font-weight:700"></p><button class="btn" id="addRem">Save reminder</button><div id="remList" style="margin-top:14px"></div>
+  <p class="mut">Reminders send when this site is open on your device and you press Send. A static site cannot send while closed.</p></div>
+ <div class="card"><h3>Email settings</h3><p id="mst"></p><p class="mut"><b>Automatic email (recommended):</b> create a free Brevo account (no card), verify your sender email, make an API key, then in Cloudflare open your Worker, Settings, Variables and secrets, and add BREVO_KEY (the key) and MAIL_FROM (your verified email). RSVP emails and scheduled reminders then send even when this site is closed. Below is the older browser-based option.</p>
+  <p class="mut">Free setup with EmailJS (200 emails a month, no card reported as of today). Create an account at emailjs.com, connect your email, make a template that uses {{to_email}}, {{subject}} and {{message}}, then paste the three codes here. A backup copy uses one extra email.</p>
+  <label for="ms">Service ID</label><input id="ms"><label for="mt">Template ID</label><input id="mt"><label for="mk">Public key</label><input id="mk">
+  <label for="mw">Admin WhatsApp number</label><input id="mw" type="tel"><label for="ma">Admin email</label><input id="ma" type="email"><label for="mb">Backup email for copies</label><input id="mb" type="email">
+  <p><label><input type="checkbox" id="oe" style="width:auto;min-height:0"> Event created or changed</label><label><input type="checkbox" id="os" style="width:auto;min-height:0"> New user added</label><label><input type="checkbox" id="or" style="width:auto;min-height:0"> RSVP Yes or No</label><label><input type="checkbox" id="oa" style="width:auto;min-height:0"> Availability updated</label><label><input type="checkbox" id="od" style="width:auto;min-height:0"> Reminder due</label></p>
+  <button class="btn" id="saveEm">Save settings</button> <button class="btn alt" id="testEm">Send test email</button>
+  <h3 style="margin-top:18px">Email log</h3><div id="mlog"></div></div>
+</section>
+
+<section id="cases" class="view">
+ <h2>Stories of serving</h2>
+ <p class="mut">Three illustrative walkthroughs of the full flow. These are made-up examples to show how the tool works, not real results from any church.</p>
+ <div id="caseList"></div>
+ <div class="card"><h3>Try it yourself</h3><p>Load the first example into your tool to click through it. It is labelled Example and can be removed in one tap.</p><button class="btn" onclick="loadEx()">Load example data</button> <button class="btn alt" onclick="rmEx()">Remove example data</button></div>
+</section>
+
+<section id="guide" class="view">
+ <h2>How serving works here</h2>
+ <p class="mut">Follow the pulsing buttons. Each step has a shortcut to the right page.</p><button class="btn pulse" data-go="cases">See example case studies</button><br><br>
+ <div class="card step" style="--c:var(--coral)"><span class="n">1</span><div><h3>Add your people</h3><p>Open <b>People</b> and add each volunteer's name and WhatsApp number. Ask their permission first.</p><span class="hand">👉</span><span class="btn pulse">＋ Add a person</span><br><br><button class="btn alt" data-go="people">Go to People</button></div></div>
+ <div class="card step" style="--c:var(--orange)"><span class="n">2</span><div><h3>Create an event</h3><p>Open <b>Events</b>, add a name, date, venue and the last time people can reply.</p><span class="hand">👉</span><span class="btn pulse">＋ Create an event</span><br><br><button class="btn alt" data-go="events">Go to Events</button></div></div>
+ <div class="card step" style="--c:var(--mint)"><span class="n">3</span><div><h3>Build the programme</h3><p>Open your event, then add each activity with its times and how many volunteers it needs. Overlaps are flagged for you.</p><span class="hand">👉</span><span class="btn pulse">Add activity</span></div></div>
+ <div class="card step" style="--c:var(--sky)"><span class="n">4</span><div><h3>Publish</h3><p>Press <b>Publish</b> on the event when the plan is ready.</p><span class="hand">👉</span><span class="btn pulse">Publish</span></div></div>
+ <div class="card step" style="--c:var(--violet)"><span class="n">5</span><div><h3>Ask people to help</h3><p>In your event, use <b>Ask people to help</b>. Share the event to one WhatsApp group, then message only the people who have not answered.</p><span class="hand">👉</span><span class="btn yes pulse">Share to a WhatsApp group</span></div></div>
+ <div class="card step" style="--c:var(--mag)"><span class="n">6</span><div><h3>Record answers and watch the gaps</h3><p>Enter each Yes or No under <b>Respond to this activity</b>. The bars show who is still needed, and the 🔔 button logs every change.</p><span class="hand">👉</span><span class="btn alt pulse">Respond to this activity</span></div></div>
+ <div class="card"><h3>Free ways to use WhatsApp</h3>
+ <p><b>Most efficient:</b> one WhatsApp group per ministry or event. Tap <b>Share to a WhatsApp group</b> to post the programme, add a WhatsApp poll for Yes or No, then use the Ask list only for people who have not replied. All of this is free.</p>
+ <p><b>Also free:</b> the one-to-one WhatsApp buttons (you press Send), WhatsApp Communities for organising several groups, and Channels for announcements with no replies.</p>
+ <p><b>Not recommended:</b> Meta's automatic business service. It charges per message, and from 1 October 2026 it started charging for replies that used to be free in the 24-hour window. Reports differ on whether a small monthly allowance remains, so it can't be relied on as free.</p>
+ <p class="mut">Add people to groups only with their agreement. WhatsApp's rules and prices can change, so check the app for current options.</p>
+ <button class="btn alt" data-go="about">Your data and privacy</button></div>
+</section>
+
+<section id="about" class="view">
+ <h2>Your data and privacy</h2>
+ <div class="card"><p>This is the front-end first release. Data is stored in your own browser, so it is not yet shared between people. Accounts, shared database, roles and email reminders come next, using Cloudflare’s free tools.</p>
+ <p class="mut">Add a privacy notice reviewed by a qualified person before real volunteer data is collected.</p></div>
+ <div class="card"><h3>Your data</h3><p class="mut">Everything is stored only in this browser. Download a backup, or delete it all.</p>
+ <button class="btn alt" onclick="backup()">Download backup</button> <button class="btn no" onclick="wipe()">Delete all my data</button></div>
+ <div class="card"><h3>Organiser code and cloud backup</h3><div id="cloud"></div></div>
+ <div class="card"><h3>Privacy</h3><p>Volunteer names, numbers and decline reasons are kept on this device only and are not sent anywhere. Only collect contact details with the person's permission, and only what you need.</p></div>
+</section>
+</main>
+
+<footer class="ft"><div class="wrap"><b>Higher Place Church</b> · A church for every nation and generation<br>Sundays 10:15am at Greenwich Picturehouse, 180 Greenwich High Rd, SE10 8NN<br><a href="mailto:love@thehigherplaceuk.com">love@thehigherplaceuk.com</a> · <a href="https://www.thehigherplaceuk.com" target="_blank" rel="noopener">thehigherplaceuk.com</a><br><small>The Higher Place is a registered charity in England and Wales (charity no. 1173023).</small></div></footer>
+<dialog id="dlg"></dialog>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let S;try{S=JSON.parse(localStorage.getItem('st')||'null')}catch(e){}
+S=S||{events:[],avail:{}};
+S.people=S.people||[];S.rem=S.rem||[];S.groups=S.groups||[];S.me=S.me||{};S.snap=S.snap||{};S.mlog=S.mlog||[];S.em=S.em||{on:{event:true,signup:true,rsvp:true,reminder:true}};S.notes=S.notes||[];S.tpl=S.tpl||'Hi {name}, we would love your help at {event} on {date}. Can you serve? Please reply YES or NO. Thank you!';S.cc=S.cc||'44';
+const persist=()=>{try{localStorage.setItem('st',JSON.stringify(S))}catch(e){alert('Storage is full. Remove some pictures or data.')}};const save=()=>{if(S.cloud){clearTimeout(window._vt);window._vt=setTimeout(()=>vaultPush(),2500)}persist();clearTimeout(window._pt);window._pt=setTimeout(()=>pushDirty(),900)};
+const cols=['--coral','--orange','--mint','--sky','--violet','--mag'];
+function go(v,id){const cv=$$('.view.on')[0];if(cv&&cv.id==='detail'&&cur&&!(v==='detail'&&id===cur)){const ev=S.events.find(e=>e.id===cur);if(ev&&(ev.status||'draft')==='draft'){leaveAsk(ev,()=>go0(v,id));return}}go0(v,id)}
+function go0(v,id){
+ $$('.view').forEach(x=>x.classList.remove('on'));
+ const t=$('#'+v);t.classList.add('on');
+ $$('.nav button').forEach(b=>b.toggleAttribute('aria-current',b.dataset.go===(v==='detail'?'events':v)));
+ if(b=$$('.nav button[aria-current]')[0])b.setAttribute('aria-current','page');
+ if(v==='home'){home();loadRemote()}if(v==='admin')adm();if(v==='cases')cases();if(v==='about')cloudCard();if(v==='inbox')inbox();bell();if(v==='availability')avail();if(v==='people'){people();grList()}if(v==='events'){list();loadRemote()}if(v==='detail')detail(id);
+ scrollTo({top:0});
+}
+var b;
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g){e.preventDefault();go(g.dataset.go)}});
+function cov(a){const y=a.people.filter(p=>p.r==='yes').length;return{y,need:a.need,pct:Math.min(100,a.need?y/a.need*100:0)}}
+const CATL={event:'Event',project:'Project',activity:'Activity'};
+let F={q:'',t:'up',gap:false,cat:'all'},etmp='';
+const fd=d=>d?new Date(d+'T00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}):'Date to be set';
+const today=()=>new Date().toISOString().slice(0,10),isPast=ev=>ev.status==='completed'||(ev.date&&ev.date<today()),isUp=ev=>ev.status!=='cancelled'&&!isPast(ev);
+function evCard(ev){const t=sm(ev);return `<div class="card" style="margin:0">${ev.img?`<img src="${ev.img}" alt="" style="width:100%;max-height:220px;object-fit:contain;background:var(--soft);border-radius:12px;margin-bottom:10px">`:''}<span class="tag" style="background:var(--sky)">${CATL[ev.cat||'event']}</span> <small>${esc(fd(ev.date))} · ${esc(ev.venue||'Venue to be set')}</small><h3>${esc(ev.name)} <span class="tag" style="background:var(--violet)">${esc(ev.status||'draft')}</span></h3>${ev.desc?`<p>${esc(ev.desc.slice(0,120))}</p>`:''}<div class="bar"><i style="width:${t.need?t.fill/t.need*100:0}%"></i></div><small>${t.fill} of ${t.need} positions filled</small><p>${t.roles.slice(0,4).map(r=>`<span class="tag gap">${esc(r)}</span>`).join(' ')}</p><button class="btn alt" onclick="openEv('${ev.id}')">See details</button> ${t.roles.length&&isUp(ev)&&ev.status==='published'?`<button class="btn pulse" onclick="signUp('${ev.id}')">Serve here</button>`:''} ${ev.srv||ev.rid?`<button class="btn alt" onclick="shareDlg('${ev.srv||ev.rid}')">Share</button>`:''}</div>`}
+function list(){const T=[['up','Upcoming'],['past','Past'],['all','All']];
+ $('#chips').innerHTML=T.map(x=>`<button class="btn ${F.t===x[0]?'':'alt'}" style="padding:6px 16px;min-height:40px" onclick="F.t='${x[0]}';list()">${x[1]}</button>`).join('')+`<button class="btn ${F.gap?'':'alt'}" style="padding:6px 16px;min-height:40px" onclick="F.gap=!F.gap;list()">Needs volunteers</button>`+'<span style="width:100%"></span>'+[['all','All types'],['event','Events'],['project','Projects'],['activity','Activities']].map(x=>`<button class="btn ${F.cat===x[0]?'':'alt'}" style="padding:6px 16px;min-height:40px" onclick="F.cat='${x[0]}';list()">${x[1]}</button>`).join('');
+ let r=allEvents().filter(ev=>F.t==='all'||(F.t==='up'?isUp(ev):isPast(ev))).filter(ev=>!F.gap||sm(ev).roles.length).filter(ev=>F.cat==='all'||(ev.cat||'event')===F.cat).filter(ev=>(ev.name+' '+(ev.venue||'')+' '+(ev.desc||'')+' '+ev.acts.map(a=>a.title+' '+(a.role||'')).join(' ')).toLowerCase().includes(F.q));
+ r.sort((a,b)=>F.t==='past'?(b.date||'').localeCompare(a.date||''):(a.date||'9').localeCompare(b.date||'9'));
+ $('#evList').innerHTML=r.length?r.map(evCard).join(''):'<div class="empty card" style="grid-column:1/-1">🔎<br>No events match. Try another search or filter.</div>'}
+$('#q').oninput=e=>{F.q=e.target.value.toLowerCase().trim();list()};
+var cur;
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go=detail]');if(g)setTimeout(()=>go('detail',cur))});
+function addRl(b){b.parentNode.querySelector('.rls').insertAdjacentHTML('beforeend','<div class="rl row" style="align-items:end"><label>Role<input class="rn" placeholder="e.g. Greeter"></label><label>Volunteers<input class="rc" type="number" min="1" value="1"></label><button class="btn alt" onclick="this.parentNode.remove()">Remove</button></div>')}
+function addPg(){const d=document.createElement('div');d.className='pg card';d.style.padding='12px';d.innerHTML='<div class="row"><label>Start<input type="time" class="ps"></label><label>End<input type="time" class="pe"></label></div><label>Title<input class="pt"></label><label>Short description<input class="pd"></label><p style="margin:12px 0 0"><b>Roles needed</b></p><div class="rls"></div><button class="btn alt addrl" onclick="addRl(this)">＋ Add a role</button><button class="btn alt" style="padding:6px 14px;min-height:40px;margin-top:8px" onclick="this.parentNode.remove()">Remove item</button>';$('#pgm').append(d);addRl(d.querySelector('.addrl'))}
+$('#openNew').onclick=()=>$('#newDlg').showModal();$('#addPg').onclick=addPg;addPg();
+$('#eip').onclick=()=>pick(d=>{etmp=d;$('#eip').textContent='Image chosen ✓'},1000);
+$('#saveEv').onclick=()=>{const n=$('#en').value.trim(),E=$('#cerr');if(!n){E.textContent='Add an event name.';return}
+ const rows=$$('.pg').map(g=>({t:g.querySelector('.pt').value.trim(),s:g.querySelector('.ps').value,e:g.querySelector('.pe').value,d:g.querySelector('.pd').value.trim(),roles:[...g.querySelectorAll('.rl')].map(l=>({name:l.querySelector('.rn').value.trim(),need:Math.max(1,+l.querySelector('.rc').value||1)}))})).filter(r=>r.t||r.s||r.e);
+ for(const r of rows)if(!r.t||!r.s||!r.e||r.e<=r.s){E.textContent='Each programme item needs a title and an end time after the start.';return}
+ const so=[...rows].sort((a,b)=>a.s.localeCompare(b.s));for(let i=1;i<so.length;i++)if(so[i].s<so[i-1].e){E.textContent='“'+so[i].t+'” overlaps “'+so[i-1].t+'”.';return}
+ E.textContent='';const id='e'+Date.now();
+ S.events.push({id,name:n,date:$('#ed').value,venue:$('#ev').value.trim(),desc:$('#edd').value.trim(),rsvpClose:$('#erc').value,status:'draft',cat:$('#ecat').value,img:etmp,rsvps:[],acts:rows.map((r,i)=>{const rl=(r.roles.length?r.roles:[{name:'',need:1}]).map((x,j)=>({id:'r'+j,name:x.name||r.t,need:x.need}));return{id:'a'+Date.now()+i,title:r.t,s:r.s,e:r.e,desc:r.d,need:rl.reduce((a,x)=>a+x.need,0),role:'',roles:rl,people:[]}})});
+ etmp='';['en','ed','ev','edd','erc'].forEach(i=>$('#'+i).value='');$('#eip').textContent='Add event image';$('#pgm').innerHTML='';addPg();$('#newDlg').close();
+ note('Event created: '+n,'event');openEv(id)};
+function detail(id){
+ const ev=S.events.find(e=>e.id===id);if(!ev)return go('events');
+ const acts=[...ev.acts].sort((a,b)=>a.s.localeCompare(b.s));const blocked=closed(ev)||ev.status==='cancelled';
+ $('#detail').innerHTML=`<button class="btn alt" data-go="events">Back to events</button><h2 style="margin-top:16px">${esc(ev.name)}</h2>${ev.img?`<img src="${ev.img}" alt="" style="width:100%;max-height:460px;object-fit:contain;background:var(--soft);border-radius:18px;margin-bottom:10px">`:''}<button class="btn alt" onclick="evImg('${ev.id}')">${ev.img?'Change':'Add'} picture</button>
+ <p class="mut">${esc(fd(ev.date))} · ${esc(ev.venue||'Venue to be set')}</p>
+ <p><span class="tag" style="background:var(--sky)">${CATL[ev.cat||'event']}</span> <span class="tag" style="background:var(--violet)">${esc(ev.status||'draft')}</span> ${ev.rsvpClose?'RSVPs close '+esc(ev.rsvpClose.replace('T',' ')):''}</p>
+ ${ev.desc?`<p>${esc(ev.desc)}</p>`:''}${summ(ev)}${shareCard(ev)}${rsvpCard(ev)}<details class="card"><summary><b>Edit type and description</b></summary><label for="edcat">Type</label><select id="edcat">${Object.keys(CATL).map(k=>`<option value="${k}" ${(ev.cat||'event')===k?'selected':''}>${CATL[k]}</option>`).join('')}</select><textarea id="edsc" rows="3" style="width:100%;border-radius:14px;padding:10px 14px;border:2px solid #d8c9b8;background:var(--card);color:var(--ink);font:inherit">${esc(ev.desc||'')}</textarea><button class="btn" style="margin-top:8px" onclick="saveDesc('${ev.id}')">Save</button></details>
+ 
+ ${acts.length?acts.map((a,i)=>{const c=cov(a),full=c.y>=a.need;return `<div class="card tl" style="--c:var(${cols[i%6]})">
+  <h3>${esc(a.title)}</h3><small>${a.s}–${a.e}</small>${a.desc?`<p>${esc(a.desc)}</p>`:''}${roleLines(a)}
+  <div class="bar"><i style="width:${c.pct}%"></i></div>
+  <span class="tag ${full?'full':'gap'}">${full?'Fully staffed 🎉':(a.need-c.y)+' more needed'}</span> <small>${c.y} of ${a.need} confirmed</small>
+  ${blocked?'<p class="mut">RSVPs are closed.</p>':''}<button class="btn" id="rd${a.id}" ${blocked?'hidden':''} onclick="respond('${ev.id}','${a.id}')">Respond to this activity</button>
+  ${roleEditor(ev,a)}<small>${a.people.length?a.people.map(p=>esc(p.n)+(p.r==='yes'?' ✅':' ✖')).join(', '):'No responses yet'}</small>
+  <br><button class="btn alt" style="min-height:40px;padding:6px 16px;margin-top:8px" onclick="delAct('${ev.id}','${a.id}')">Remove</button></div>`}).join(''):'<div class="empty card">🎶<br>No activities yet. Add the first slot below.</div>'}
+ ${ask(ev)}<div class="card"><h3>Add an activity</h3>
+ <label for="at">Activity</label><input id="at" placeholder="Reception">
+ <label for="ar">Role needed (e.g. Welcome team)</label><input id="ar"><label for="ad">Description of this item</label><textarea id="ad" rows="2" style="width:100%;border-radius:14px;padding:10px 14px;border:2px solid #d8c9b8;background:var(--card);color:var(--ink);font:inherit"></textarea><div class="row"><div><label for="as">Start</label><input id="as" type="time" value="14:00"></div><div><label for="ae">End</label><input id="ae" type="time" value="15:00"></div><div><label for="an">Volunteers needed</label><input id="an" type="number" min="1" value="4"></div></div>
+ <p id="err" role="alert" style="color:var(--coral);font-weight:700"></p>
+ <button class="btn" onclick="addAct('${ev.id}')">Add activity</button></div>
+ <div class="card"><h3>Manage this event</h3><div class="row"><button class="btn" onclick="setStatus('${ev.id}','published')">Publish</button><button class="btn no" onclick="setStatus('${ev.id}','cancelled')">Cancel event</button><button class="btn alt" onclick="setStatus('${ev.id}','completed')">Mark completed</button><button class="btn alt" onclick="ics('${ev.id}')">Add to calendar</button>${ev.rsvpClose&&closed(ev)?`<button class="btn alt" onclick="reopen('${ev.id}')">Reopen RSVPs</button>`:''}</div></div>`;
+}
+function addAct(id){
+ const ev=S.events.find(e=>e.id===id),t=$('#at').value.trim(),s=$('#as').value,e=$('#ae').value,n=Math.max(1,+$('#an').value||1);
+ if(!t||!s||!e||e<=s){$('#err').textContent='Add a name and make sure the end time is after the start.';return}
+ const o=ev.acts.find(a=>s<a.e&&e>a.s);
+ if(o){$('#err').textContent='Overlaps with “'+o.title+'” ('+o.s+'–'+o.e+'). Change the times to continue.';return}
+ ev.acts.push({id:'a'+Date.now(),title:t,s,e,need:n,role:$('#ar').value.trim(),roles:[{id:'r0',name:$('#ar').value.trim()||t,need:n}],desc:$('#ad').value.trim(),people:[]});save();detail(id);$('#as').value=e;$('#ae').value=plus(e);
+}
+function delAct(id,aid){const ev=S.events.find(e=>e.id===id);ev.acts=ev.acts.filter(a=>a.id!==aid);save();detail(id)}
+function rsvp(id,aid,r){
+ const ev=S.events.find(e=>e.id===id),a=ev.acts.find(x=>x.id===aid),n=$('#n'+aid).value.trim();
+ if(!n){$('#n'+aid).focus();return}$('#dlg').open&&$('#dlg').close();
+ if(closed(ev)||ev.status==='cancelled')return;const reason=r==='no'?$('#r'+aid).value:'',rid=($('#ro'+aid)||{}).value||'';if(ev.srv){fetch('/api/events/'+ev.srv+'/rsvp',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({n,r,c:reason,a:aid+(rid?'~'+rid:'')})}).then(x=>{if(!x.ok)alert('Could not save online. Please try again.');pull()});return}
+ a.people=a.people.filter(p=>p.n.toLowerCase()!==n.toLowerCase());
+ a.people.push({n,r,reason,role:rid});note(n+(r==='yes'?' will serve at ':' cannot serve at ')+a.title+' ('+ev.name+')','rsvp');
+ const was=cov(a);detail(id);
+ if(r==='yes'&&was.y>=a.need)confetti();
+}
+function confetti(){
+ if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+ for(let i=0;i<60;i++){const c=document.createElement('i');c.className='conf';
+  c.style.cssText=`left:${Math.random()*100}vw;background:var(${cols[i%6]});animation-delay:${Math.random()*.6}s`;
+  document.body.append(c);setTimeout(()=>c.remove(),3200)}
+}
+function wnum(n){let d=String(n).replace(/[^\d+]/g,'');if(d[0]==='+')return d.slice(1).replace(/\D/g,'');d=d.replace(/\D/g,'');if(d.startsWith('00'))return d.slice(2);if(d[0]==='0')return S.cc+d.slice(1);return d}
+function msg(p,ev){return S.tpl.replace('{name}',p.n.split(' ')[0]).replace('{event}',ev?ev.name:'our next event').replace('{date}',ev&&ev.date?ev.date:'the date to be confirmed')}
+function btns(p,ev){const m=msg(p,ev);let h='';
+ if(wnum(p.w).length>=8)h+=`<a class="btn yes" style="padding:8px 16px;min-height:44px" target="_blank" rel="noopener" href="https://wa.me/${wnum(p.w)}?text=${encodeURIComponent(m)}">WhatsApp</a> `;
+ if(p.e)h+=`<a class="btn alt" style="padding:8px 16px;min-height:44px" href="mailto:${esc(p.e)}?subject=${encodeURIComponent(ev?ev.name:'Higher Place Church Volunteer Tool')}&body=${encodeURIComponent(m)}">Email</a>`;
+ return h||'<small>No contact details</small>'}
+function ask(ev){
+ const done=new Set(ev.acts.flatMap(a=>a.people.map(x=>x.n.toLowerCase())));
+ const todo=S.people.filter(p=>!done.has(p.n.toLowerCase()));
+ return `<div class="card"><h3>Ask people to help</h3><p><button class="btn yes pulse" onclick="shareGroup('${ev.id}')">Share to a WhatsApp group</button></p><p><button class="btn alt" onclick="copyGroup('${ev.id}')">Copy message</button></p><p class="mut">Pick your group in WhatsApp, press Send, then add a poll for Yes or No.</p>`+(S.people.length?(todo.length?`<p class="mut">${todo.length} not responded yet. Each button opens a ready-to-send message.</p>`+todo.map(p=>`<p><b>${esc(p.n)}</b> <small>${esc(p.r)}</small><br>${btns(p,ev)}</p>`).join(''):'<p>Everyone you added has responded 🎉</p>'):'<p class="mut">Add people first, then contact them from here.</p><button class="btn alt" data-go="people">Add people</button>')+'</div>'}
+function people(){
+ $('#tpl').value=S.tpl;$('#cc').value=S.cc;
+ $('#tpl').onchange=e=>{S.tpl=e.target.value||S.tpl;save()};$('#cc').onchange=e=>{S.cc=e.target.value.replace(/\D/g,'')||'44';save()};
+ $('#pList').innerHTML=S.people.length?S.people.map((p,i)=>`<div class="card"><b>${esc(p.n)}</b> <span class="tag" style="background:var(--violet)">${esc(p.r)}</span><br><small>${esc(p.w)} ${esc(p.e||'')}</small><br><br>${btns(p,null)} <button class="btn alt" style="padding:8px 16px;min-height:44px" onclick="S.people.splice(${i},1);save();people()">Remove</button></div>`).join(''):'<div class="empty card">👋<br>Nobody added yet.</div>'}
+$('#addP').onclick=()=>{const n=$('#pn').value.trim(),w=$('#pw').value.trim(),e=$('#pe').value.trim();
+ if(!n||!/^\S+@\S+\.\S+$/.test(e)){$('#perr').textContent='Add a name and a valid email address.';return}
+ if(S.people.some(x=>x.e.toLowerCase()===e.toLowerCase())){$('#perr').textContent='That email is already added.';return}
+ if(w&&wnum(w).length<8){$('#perr').textContent='That number looks too short. Include the full number.';return}
+ $('#perr').textContent='';S.people.push({n,w,e,r:$('#pr').value});note('New user added: '+n+' ('+e+')','signup');['pn','pw','pe'].forEach(i=>$('#'+i).value='');people()};
+const closed=ev=>!ev.reopen&&ev.rsvpClose&&new Date(ev.rsvpClose)<new Date();
+function note(t,k){S.notes.unshift({t,at:new Date().toLocaleString('en-GB'),read:false});S.notes=S.notes.slice(0,100);save();bell();const m=S.em;if(k&&m.on&&m.on[k]&&!(MAILON&&k==='rsvp'))[...new Set([m.admin,m.backup].filter(Boolean))].forEach(a=>mail(a,'Volunteer Tool: '+t.slice(0,60),t))}
+function bell(){const c=S.notes.filter(n=>!n.read).length;$('#bc').textContent=c?' '+c:''}
+function inbox(){S.notes.forEach(n=>n.read=true);save();bell();
+ $('#nList').innerHTML=S.notes.length?S.notes.map(n=>`<div class="card"><b>${esc(n.t)}</b><br><small>${esc(n.at)}</small></div>`).join(''):'<div class="empty card">🔔<br>Nothing yet. Responses and event changes appear here.</div>'}
+function setStatus(id,st){const ev=S.events.find(e=>e.id===id);ev.status=st;note('Event '+ev.name+' is now '+st,'event');detail(id)}
+function reopen(id){const ev=S.events.find(e=>e.id===id);ev.reopen=true;note('RSVPs reopened for '+ev.name,'event');detail(id)}
+function dl(name,type,text){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click()}
+function ics(id){const ev=S.events.find(e=>e.id===id);if(!ev.date){alert('Add a date to this event first.');return}
+ const d=ev.date.replace(/-/g,''),t=x=>d+'T'+x.replace(':','')+'00',q=x=>String(x).replace(/[,;]/g,' ');
+ const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//HigherPlace//EN'];
+ (ev.acts.length?ev.acts:[{title:ev.name,s:'09:00',e:'10:00'}]).forEach((a,i)=>L.push('BEGIN:VEVENT','UID:'+ev.id+'-'+i+'@servetogether','DTSTAMP:'+d+'T000000','DTSTART:'+t(a.s),'DTEND:'+t(a.e),'SUMMARY:'+q(ev.name+': '+a.title),'LOCATION:'+q(ev.venue||''),'END:VEVENT'));
+ L.push('END:VCALENDAR');dl(ev.name.replace(/\W+/g,'-')+'.ics','text/calendar',L.join('\r\n'))}
+function backup(){dl('servetogether-backup.json','application/json',JSON.stringify(S,null,2))}
+function wipe(){if(confirm('Delete all events, people and notifications on this device?')){try{localStorage.removeItem('st')}catch(e){}location.reload()}}
+function gmsg(ev){return ev.name+'\n'+(ev.date||'')+' '+(ev.venue||'')+'\n\nWe need:\n'+(ev.acts.map(a=>'- '+a.title+' '+a.s+'-'+a.e+': '+a.need+' volunteers').join('\n')||'- Details to follow')+'\n\nCan you serve? Please reply YES or NO. Thank you!'}
+function shareGroup(id){window.open('https://wa.me/?text='+encodeURIComponent(gmsg(S.events.find(e=>e.id===id))),'_blank','noopener')}
+function copyGroup(id){const t=gmsg(S.events.find(e=>e.id===id));(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>alert('Message copied. Paste it into WhatsApp.')).catch(()=>prompt('Copy this message:',t))}
+async function mail(to,subject,message){const m=S.em,row={at:new Date().toLocaleString('en-GB'),to,subject};
+ if(!m.sid||!m.tid||!m.key){row.ok=false;row.err='Email settings not filled in'}
+ else{try{const r=await fetch('https://api.emailjs.com/api/v1.0/email/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({service_id:m.sid,template_id:m.tid,user_id:m.key,template_params:{to_email:to,subject,message}})});row.ok=r.ok;if(!r.ok)row.err=(await r.text()).slice(0,80)}catch(e){row.ok=false;row.err='Network error'}}
+ S.mlog.unshift(row);S.mlog=S.mlog.slice(0,60);save();if($('#admin').classList.contains('on'))adm();return row.ok}
+const who=r=>{const ev=S.events.find(e=>e.id===r.evId);if(r.who==='pending'&&ev){const d=new Set(ev.acts.flatMap(a=>a.people.map(x=>x.n.toLowerCase())));return S.people.filter(p=>!d.has(p.n.toLowerCase()))}return S.people};
+function dueCheck(){S.rem.forEach(r=>{if(!r.sent&&!r.nt&&new Date(r.at)<=new Date()){r.nt=1;note('Reminder due: '+r.msg,'reminder')}})}
+async function sendRem(id){const r=S.rem.find(x=>x.id===id),ev=S.events.find(e=>e.id===r.evId);let ok=0;
+ for(const p of who(r))if(await mail(p.e,'Reminder'+(ev?': '+ev.name:''),'Hi '+p.n.split(' ')[0]+', '+r.msg+(ev?' ('+ev.name+' '+(ev.date||'')+')':'')))ok++;
+ if(ok){r.sent=1;save()}alert(ok+' email(s) sent. See the email log for any failures.');adm()}
+function stats(){let need=0,fill=0,yes=0,no=0,pend=0,gaps=[];
+ S.events.forEach(ev=>{const rs=new Set();ev.acts.forEach(a=>{const y=a.people.filter(x=>x.r==='yes').length;need+=a.need;fill+=Math.min(a.need,y);yes+=y;no+=a.people.length-y;a.people.forEach(x=>rs.add(x.n.toLowerCase()));if(y<a.need&&ev.status!=='cancelled'&&ev.status!=='completed')gaps.push({ev,a,short:a.need-y})});if(ev.acts.length)pend+=S.people.filter(x=>!rs.has(x.n.toLowerCase())).length});
+ return{need,fill,yes,no,pend,gaps:gaps.sort((a,b)=>b.short-a.short)}}
+function adm(){dueCheck();syncRem();fetch('/api/status').then(r=>r.json()).then(j=>{MAILON=!!j.mail;const e=$('#mst');if(e)e.innerHTML=j.mail?'<span class="tag full">Automatic email is on</span>':'<span class="tag gap">Automatic email is off</span>'}).catch(()=>{});const t=stats(),k=(n,l,c)=>`<div class="card feat" style="--c:var(${c})"><h2 style="margin:0" ${typeof n==='number'?'data-n="'+n+'"':''}>${n}</h2><small>${l}</small></div>`;
+ $('#kpi').innerHTML=k(S.events.length,'events','--coral')+k(S.people.length,'users','--sky')+k(t.fill+' / '+t.need,'positions filled','--mint')+k(t.pend,'awaiting a response','--orange');
+ const tot=t.yes+t.no+t.pend;let off=25;const seg=(v,c)=>{const l=tot?v/tot*100:0,o=`<circle cx="21" cy="21" r="15.9155" fill="none" stroke="var(${c})" stroke-width="7" stroke-dasharray="${l} ${100-l}" stroke-dashoffset="${off}"/>`;off-=l;return o};
+ $('#donut').innerHTML=tot?`<svg viewBox="0 0 42 42" width="180" role="img" aria-label="${t.yes} yes, ${t.no} no, ${t.pend} no response">${seg(t.yes,'--mint')}${seg(t.no,'--coral')}${seg(t.pend,'--orange')}</svg><p><span class="tag full">Yes ${t.yes}</span> <span class="tag gap">No ${t.no}</span> <span class="tag" style="background:var(--orange)">Waiting ${t.pend}</span></p>`:'<div class="empty">Responses will appear here.</div>';
+ $('#evBars').innerHTML=S.events.length?S.events.map(ev=>{const n=ev.acts.reduce((x,a)=>x+a.need,0),f=ev.acts.reduce((x,a)=>x+Math.min(a.need,cov(a).y),0);return `<p><b>${esc(ev.name)}</b> <small>${esc(ev.status||'draft')}</small><div class="bar"><i style="width:${n?f/n*100:0}%"></i></div><small>${f} of ${n} filled</small> <button class="btn alt" style="padding:4px 14px;min-height:36px" data-go="detail" onclick="cur='${ev.id}'">Open</button></p>`}).join(''):'<div class="empty">No events yet.</div>';
+ $('#gaps').innerHTML=t.gaps.length?t.gaps.slice(0,8).map(g=>`<p><span class="tag gap">${g.short} needed</span> <b>${esc(g.a.title)}</b> <small>${esc(g.ev.name)} ${g.a.s}-${g.a.e}</small> <button class="btn alt pulse" style="padding:4px 14px;min-height:36px" data-go="detail" onclick="cur='${g.ev.id}'">Fill it</button></p>`).join(''):'<div class="empty">No gaps. 🎉</div>';
+ $('#users').innerHTML=S.people.length?S.people.map((p,i)=>`<p><b>${esc(p.n)}</b> <small>${esc(p.r)} · ${esc(p.e)}</small> <button class="btn alt" style="padding:4px 14px;min-height:36px" onclick="if(confirm('Remove ${esc(p.n).replace(/'/g,'')}?')){S.people.splice(${i},1);save();adm()}">Remove</button></p>`).join(''):'<div class="empty">No users yet.</div>';
+ $('#re').innerHTML='<option value="">No event</option>'+S.events.map(e=>`<option value="${e.id}">${esc(e.name)}</option>`).join('');
+ $('#remList').innerHTML=S.rem.map(r=>{const due=!r.sent&&new Date(r.at)<=new Date(),em=who(r).map(x=>x.e).join(',');return `<div class="card"><b>${esc(r.msg)}</b><br><small>${esc(r.at.replace('T',' '))} · ${who(r).length} recipient(s)</small><br>${r.sent?'<span class="tag full">Sent</span>':r.srv&&MAILON?'<span class="tag" style="background:var(--sky)">Sends automatically</span>':due?'<span class="tag gap">Due now</span>':'<span class="tag" style="background:var(--sky)">Scheduled</span>'} <button class="btn ${due?'pulse':'alt'}" style="padding:6px 14px;min-height:40px" onclick="sendRem('${r.id}')">Send by email</button> <a class="btn alt" style="padding:6px 14px;min-height:40px" href="mailto:?bcc=${encodeURIComponent(em)}&subject=Reminder&body=${encodeURIComponent(r.msg)}">Use my email app</a> <button class="btn alt" style="padding:6px 14px;min-height:40px" onclick="delRem('${r.id}')">Delete</button></div>`}).join('');
+ const m=S.em;$('#ms').value=m.sid||'';$('#mt').value=m.tid||'';$('#mk').value=m.key||'';$('#ma').value=m.admin||'';$('#mb').value=m.backup||'';$('#oe').checked=!!m.on.event;$('#os').checked=!!m.on.signup;$('#or').checked=!!m.on.rsvp;$('#od').checked=!!m.on.reminder;$('#oa').checked=m.on.avail!==false;$('#mw').value=m.w||'';
+ $('#mlog').innerHTML=S.mlog.length?S.mlog.slice(0,10).map(l=>`<p><span class="tag ${l.ok?'full':'gap'}">${l.ok?'Sent':'Failed'}</span> <small>${esc(l.at)} · ${esc(l.to)} · ${esc(l.subject)}${l.err?' · '+esc(l.err):''}</small></p>`).join(''):'<div class="empty">No emails yet.</div>'}
+$('#addRem').onclick=()=>{const m=$('#rm').value.trim(),t=$('#rt').value;if(!m||!t){$('#rerr').textContent='Add a message and a date and time.';return}$('#rerr').textContent='';const R={id:'r'+Date.now(),msg:m,at:t,evId:$('#re').value,who:$('#rw').value},ev=S.events.find(e=>e.id===R.evId);S.rem.push(R);save();$('#rm').value='';adm();
+ fetch('/api/reminders',{method:'POST',headers:{'content-type':'application/json','x-key':S.key},body:JSON.stringify({id:R.id,at:new Date(t).toISOString(),subject:'Reminder'+(ev?': '+ev.name:''),body:m+(ev?' ('+ev.name+' '+fd(ev.date)+')':''),rcpt:who(R).map(p=>({n:p.n,e:p.e})),ev:ev&&ev.srv||'',mode:R.who})}).then(r=>{if(r.ok){R.srv=1;save();adm()}}).catch(()=>{})};
+$('#saveEm').onclick=()=>{S.em={sid:$('#ms').value.trim(),tid:$('#mt').value.trim(),key:$('#mk').value.trim(),admin:$('#ma').value.trim(),backup:$('#mb').value.trim(),on:{event:$('#oe').checked,signup:$('#os').checked,rsvp:$('#or').checked,reminder:$('#od').checked,avail:$('#oa').checked},w:$('#mw').value.trim()};save();alert('Email settings saved on this device.')};
+$('#testEm').onclick=async()=>{$('#saveEm').click();if(!S.em.admin){alert('Add an admin email first.');return}alert(await mail(S.em.admin,'Test email','Your email setup works.')?'Test email sent.':'Test failed. See the email log.')};
+const plus=t=>{let[h,m]=t.split(':').map(Number);h=(h+1)%24;return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')};
+function sm(ev){let need=0,fill=0,roles=[];ev.acts.forEach(a=>{const y=cov(a).y;need+=a.need;fill+=Math.min(a.need,y);if(a.roles){a.roles.forEach(r=>{const f=rfill(a,r);if(f<r.need)roles.push(r.name+' ('+(r.need-f)+' more)')})}else if(y<a.need)roles.push((a.role||a.title)+' ('+(a.need-y)+' more)')});return{need,fill,roles}}
+function summ(ev){const t=sm(ev);return `<div class="card"><h3>Summary</h3><div class="row"><div><h2 style="margin:0">${t.need}</h2><small>volunteers needed</small></div><div><h2 style="margin:0">${t.fill}</h2><small>confirmed</small></div><div><h2 style="margin:0">${Math.max(0,t.need-t.fill)}</h2><small>still needed</small></div></div><p><b>Roles to fill:</b> ${t.roles.length?t.roles.map(r=>`<span class="tag gap">${esc(r)}</span>`).join(' '):'<span class="tag full">All roles filled</span>'}</p><p><b>Status:</b> ${esc(ev.status||'draft')}</p></div>`}
+function saveDesc(id){const ev=S.events.find(e=>e.id===id);ev.desc=$('#edsc').value.trim();ev.cat=$('#edcat').value;note('Description updated for '+ev.name,'event');detail(id)}
+function openEv(id){if(String(id).startsWith('r:'))return openShared(id.slice(2));cur=id;go('detail',id)}
+function signUp(id){openEv(id);if(String(id).startsWith('r:'))return;const ev=S.events.find(e=>e.id===id),g=ev.acts.find(a=>cov(a).y<a.need);if(g){respond(ev.id,g.id)}}
+function home(){const up=allEvents().filter(isUp).sort((a,b)=>(a.date||'9').localeCompare(b.date||'9')).slice(0,5);
+ $('#homeEv').innerHTML=up.length?'<div class="grid">'+up.map(evCard).join('')+'</div><br>':'<div class="empty card">📅<br>Nothing planned yet, check back soon.<br><br><button class="btn" data-go="events">Create an event</button></div>';
+ $('#homeAct').innerHTML=S.notes.length?S.notes.slice(0,5).map(n=>`<div class="card"><b>${esc(n.t)}</b><br><small>${esc(n.at)}</small></div>`).join(''):'<div class="empty card">Activity will appear here.</div>';homeStats()}
+const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''),dec=x=>JSON.parse(decodeURIComponent(escape(atob(x.replace(/-/g,'+').replace(/_/g,'/')))));
+const base=()=>location.origin+location.pathname;
+function evLink(ev){return base()+'#e='+ev.srv}
+function shareCard(ev){if(!ev.srv)return `<div class="card"><h3>Share this event</h3><p class="mut">${ev.status==='draft'?'Press Publish to create the online link people can use to RSVP.':'Creating the online link…'}</p>${SE?'<p style="color:var(--coral)"><b>The online service is not reachable.</b> Check that the Cloudflare database is set up.</p>':''}</div>`;
+ return `<div class="card"><h3>Share this event</h3><p class="mut">Anyone with the link can see the event page and RSVP. Responses appear here within seconds while this page is open.</p><p style="word-break:break-all"><small>${esc(evLink(ev))}</small></p><button class="btn" onclick="cp('${evLink(ev)}')">Copy link</button> <button class="btn yes" onclick="shareDlg('${ev.srv}')">Share…</button></div>`}
+function ltext(ev){return ev.name+(ev.date?' · '+ev.date:'')+'\nCan you serve? RSVP here: '+evLink(ev)}
+function copyLink(id){const ev=S.events.find(e=>e.id===id);(navigator.clipboard?navigator.clipboard.writeText(evLink(ev)):Promise.reject()).then(()=>alert('Link copied.')).catch(()=>prompt('Copy this link:',evLink(ev)))}
+function shareLink(id){const ev=S.events.find(e=>e.id===id);if(navigator.share)navigator.share({title:ev.name,text:ev.name+' - RSVP here',url:evLink(ev)}).catch(()=>{});else window.open('https://wa.me/?text='+encodeURIComponent(ltext(ev)),'_blank','noopener')}
+function rsvpCard(ev){const R=ev.rsvps||[],y=R.filter(x=>x.r==='yes').length;return `<div class="card"><h3>RSVP responses</h3><p><span class="tag full">Yes ${y}</span> <span class="tag gap">No ${R.length-y}</span></p>${R.length?R.slice().reverse().map(x=>`<p><b>${esc(x.n)}</b> ${x.r==='yes'?'✅':'✖'}${x.c?'<br><small>'+esc(x.c)+'</small>':''}</p>`).join(''):'<small>Responses recorded from shared links appear here. When one arrives by email or WhatsApp, tap its record link on this device.</small>'}</div>`}
+let D0,ch='';
+async function emj(c,to,subject,message){try{const r=await fetch('https://api.emailjs.com/api/v1.0/email/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({service_id:c.s,template_id:c.t,user_id:c.k,template_params:{to_email:to,subject,message}})});return r.ok}catch(e){return false}}
+function shared(D){D0=D;go('shared');const opts=D.a.filter(a=>a[5]>0).map(a=>{const rl=a[7]||[];return rl.length?`<optgroup label="${esc(a[1])} ${esc(a[2])}-${esc(a[3])}">${rl.map(r=>`<option value="${esc(a[0]+'~'+r[0])}">${esc(r[1])} (${Math.max(0,r[2]-((D.y||{})[a[0]+'~'+r[0]]||0))} still needed)</option>`).join('')}</optgroup>`:`<option value="${esc(a[0])}">${esc(a[1])} ${esc(a[2])}-${esc(a[3])}</option>`}).join('');
+ $('#shared').innerHTML=`${D.img?`<img src="${D.img}" alt="" style="width:100%;max-height:460px;object-fit:contain;background:var(--soft);border-radius:18px;margin-bottom:12px">`:''}<h2>${esc(D.n)}</h2><p class="mut">${esc(fd(D.d))} · ${esc(D.v||'Venue to be set')}</p><button class="btn alt" onclick="shareDlg('${D.i}')">Share this event</button>${D.ds?`<p>${esc(D.ds)}</p>`:''}<div class="card"><h3>Programme</h3>${D.a.map((a,i)=>`<div class="tl" style="--c:var(${cols[i%6]})"><b>${esc(a[1])}</b> <small>${esc(a[2])}-${esc(a[3])}</small>${(a[7]||[]).length?'<br><small>Roles: '+a[7].map(r=>esc(r[1])+' ×'+r[2]).join(', ')+'</small>':''}${a[4]?`<p>${esc(a[4])}</p>`:''}</div>`).join('')||'<small>Programme to follow.</small>'}</div>
+ <div class="card"><h3>Will you serve?</h3><label for="sn">Your name</label><input id="sn" autocomplete="name">
+ <label for="sa">Which role would you like? (optional)</label><select id="sa"><option value="">Any / not sure</option>${opts}</select>
+ <div class="row" style="margin-top:12px"><button class="btn yes" id="sy">Yes, I can serve</button><button class="btn no" id="sno">No, I cannot serve</button></div>
+ <label for="sc">Comments (optional)</label><textarea id="sc" rows="2" ${'style="width:100%;border-radius:14px;padding:10px 14px;border:2px solid #d8c9b8;background:var(--card);color:var(--ink);font:inherit"'}></textarea>
+ <p id="se" role="alert" style="color:var(--coral);font-weight:700"></p><button class="btn pulse" id="ss">Send my answer</button><div id="sd"></div></div>`;
+ ch='';$('#sy').onclick=()=>{ch='yes';$('#sy').style.outline='4px solid var(--ink)';$('#sno').style.outline=''};$('#sno').onclick=()=>{ch='no';$('#sno').style.outline='4px solid var(--ink)';$('#sy').style.outline=''};
+ $('#ss').onclick=async()=>{const n=$('#sn').value.trim(),c=$('#sc').value.trim();if(!n||!ch){$('#se').textContent='Please add your name and choose Yes or No.';return}$('#se').textContent='';$('#ss').disabled=true;
+  const tx=n+' says '+ch.toUpperCase()+' for '+D.n+(c?'. Comment: '+c:''),w=D.w?wnum(D.w):'';
+  try{const r=await fetch('/api/events/'+D.i+'/rsvp',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({n,r:ch,c,a:$('#sa').value})});if(!r.ok)throw 0;
+   $('#sd').innerHTML=`<div class="card"><b>Thank you for serving with us! 🙌</b><p class="mut">To change it, send again with the same name.</p>${w?`<a class="btn alt" target="_blank" rel="noopener" href="https://wa.me/${w}?text=${encodeURIComponent(tx)}">Also tell the organiser on WhatsApp</a>`:''}</div>`;confetti()}
+  catch(e){$('#se').textContent='Sorry, your answer could not be sent. Please try again.'}$('#ss').disabled=false}}
+function importR(R){const ev=S.events.find(e=>e.id===R.i);if(!ev){alert('This response belongs to an event saved on the organiser\u2019s device. Open the link there.');return go('home')}
+ ev.rsvps=ev.rsvps||[];if(!ev.rsvps.some(x=>x.t===R.t&&x.n===R.n)){ev.rsvps.push({n:R.n,r:R.r,c:R.c,t:R.t});const a=ev.acts.find(x=>x.id===R.a);if(a){a.people=a.people.filter(p=>p.n.toLowerCase()!==R.n.toLowerCase());a.people.push({n:R.n,r:R.r,reason:R.c||''})}note('RSVP recorded: '+R.n+' says '+R.r+' for '+ev.name)}
+ history.replaceState(null,'',location.pathname);openEv(ev.id)}
+let RM=[],busy=0,SE=false,MAILON=false;
+const rand=()=>[...crypto.getRandomValues(new Uint8Array(24))].map(b=>b.toString(16).padStart(2,'0')).join('');
+const pubData=ev=>({n:ev.name,d:ev.date||'',v:ev.venue||'',ds:ev.desc||'',c:ev.cat||'event',st:ev.status||'draft',rc:(ev.rsvpClose&&!ev.reopen&&!isNaN(new Date(ev.rsvpClose)))?new Date(ev.rsvpClose).toISOString():'',w:S.em.w||'',a:ev.acts.map(a=>[a.id,a.title,a.s,a.e,a.desc||'',a.need,a.role||'',roles(a).map(r=>[r.id,r.name,r.need])])});
+async function pushDirty(){if(busy)return;busy=1;try{for(const ev of S.events){if((ev.status||'draft')==='draft'&&!ev.srv)continue;const nt=[S.em.admin,S.em.backup].filter(Boolean),h=JSON.stringify([pubData(ev),ev.img||'',nt]);if(h===ev._h)continue;S.key=S.key||rand();
+  const r=await fetch('/api/events',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:ev.srv,key:S.key,data:pubData(ev),img:ev.img&&ev.img.startsWith('data:')?ev.img:(ev.img?undefined:''),notify:nt})});if(!r.ok)throw 0;const j=await r.json();ev.srv=j.id;ev._h=h;persist();SE=false;if($('#detail').classList.contains('on')&&cur===ev.id)detail(ev.id)}}catch(e){SE=true;if($('#detail').classList.contains('on'))detail(cur)}busy=0}
+async function loadRemote(){try{const r=await fetch('/api/events');if(!r.ok)return;RM=(await r.json()).map(x=>{const d=x.data;return{id:'r:'+x.id,rid:x.id,remote:1,cat:d.c,name:d.n,date:d.d,venue:d.v,desc:d.ds,status:d.st,img:x.hi?'/api/img/'+x.id:'',acts:d.a.map(a=>{const rl=(a[7]||[]).map(r=>({id:r[0],name:r[1],need:r[2]}));let pp=[];rl.forEach(r=>{pp=pp.concat(Array(x.y[a[0]+'~'+r.id]||0).fill({n:'',r:'yes',role:r.id}))});pp=pp.concat(Array(x.y[a[0]]||0).fill({n:'',r:'yes'}));return{id:a[0],title:a[1],s:a[2],e:a[3],desc:a[4],need:a[5],role:a[6],roles:rl.length?rl:undefined,people:pp}})}});const v=$$('.view.on')[0];if(v&&v.id==='home')home();if(v&&v.id==='events')list()}catch(e){}}
+const allEvents=()=>S.events.concat(RM.filter(r=>!S.events.some(e=>e.srv===r.rid)));
+async function pull(){if(!S.key||document.hidden)return;let ch=false;for(const ev of S.events){if(!ev.srv)continue;try{const r=await fetch('/api/events/'+ev.srv+'/rsvps',{headers:{'x-key':S.key}});if(!r.ok)continue;ev.sids=ev.sids||[];ev.rsvps=ev.rsvps||[];
+  for(const x of await r.json()){const had=ev.sids.includes(x.id);if(had&&ev.rsvps.some(y=>y.sid===x.id&&y.t===x.t))continue;if(!had)ev.sids.push(x.id);ev.rsvps=ev.rsvps.filter(y=>y.sid!==x.id);ev.rsvps.push({sid:x.id,n:x.n,r:x.r,c:x.c,t:x.t});const a=ev.acts.find(z=>z.id===String(x.a).split('~')[0]);if(a){a.people=a.people.filter(p=>p.n.toLowerCase()!==x.n.toLowerCase());a.people.push({n:x.n,r:x.r,reason:x.c||'',role:String(x.a).split('~')[1]})}ch=true;if(!had)note('New RSVP: '+x.n+' says '+x.r+' for '+ev.name,'rsvp')}}catch(e){}}
+ if(ch){save();const v=$$('.view.on')[0];if(v){if(v.id==='detail')detail(cur);if(v.id==='home')home();if(v.id==='admin')adm()}}}
+async function openShared(id){try{const r=await fetch('/api/events/'+id);if(!r.ok)throw 0;const x=await r.json(),d=x.data;shared({i:x.id,n:d.n,d:d.d,v:d.v,ds:d.ds,w:d.w,img:x.hi?'/api/img/'+x.id:'',a:d.a,y:x.y});const late=d.rc&&Date.now()>Date.parse(d.rc);if(late){$('#ss').disabled=true;$('#sd').innerHTML='<div class="card">Responses closed on '+esc(new Date(d.rc).toLocaleString('en-GB'))+'. Please contact the organiser.</div>'}if(d.st!=='published'){$('#ss').disabled=true;$('#sd').innerHTML='<div class="card">This event is not open for responses.</div>'}}catch(e){go('home');alert('Could not open this event. Check the link or your connection.')}}
+function boot(){const h=location.hash;S.key=S.key||rand();persist();fetch('/api/status').then(r=>r.json()).then(j=>{MAILON=!!j.mail;S.srv=!!j.db}).catch(()=>{});loadRemote();setInterval(pull,15000);setTimeout(pull,1500);if(h.startsWith('#e='))return openShared(h.slice(3).replace(/\W/g,''));go('home')}
+function delRem(id){fetch('/api/reminders',{method:'POST',headers:{'content-type':'application/json','x-key':S.key},body:JSON.stringify({id,del:true})}).catch(()=>{});S.rem=S.rem.filter(x=>x.id!==id);save();adm()}
+async function syncRem(){try{const r=await fetch('/api/reminders',{headers:{'x-key':S.key}});if(!r.ok)return;(await r.json()).forEach(x=>{const l=S.rem.find(y=>y.id===x.id);if(l&&x.sent&&!l.sent){l.sent=1}});persist()}catch(e){}}
+async function vaultPush(){try{const t=JSON.stringify(S,(k,v)=>k==='img'&&typeof v==='string'&&v.length>200?undefined:v);if(t.length>1400000){alert('Your data is too large to back up. Remove some items.');return}const r=await fetch('/api/vault',{method:'PUT',headers:{'x-key':S.key,'content-type':'application/json'},body:t});$('#cloudMsg')&&($('#cloudMsg').textContent=r.ok?'Backed up just now.':'Backup failed.')}catch(e){}}
+async function restoreCode(){const c=$('#rcode').value.trim();if(c.length<16){alert('Enter your full organiser code.');return}
+ try{const r=await fetch('/api/vault',{headers:{'x-key':c}});if(!r.ok){alert('No backup found for that code. If you only published events, they will still be reachable after you enable cloud backup on the old device.');return}
+  const b=await r.json();Object.keys(S).forEach(k=>delete S[k]);Object.assign(S,b,{key:c,cloud:true});const m=await (await fetch('/api/mine',{headers:{'x-key':c}})).json();m.forEach(x=>{const ev=(S.events||[]).find(e=>e.srv===x.id);if(ev&&x.hi)ev.img='/api/img/'+x.id});persist();alert('Restored. Reloading.');location.reload()}catch(e){alert('Could not restore. Check your connection.')}}
+function cloudCard(){$('#cloud').innerHTML=`<p class="mut">Your code is the key to your events and backup. Keep it private. Anyone with it can manage your events.</p><p><b>Code:</b> <span id="ck" style="word-break:break-all">${'•'.repeat(12)}</span></p><button class="btn alt" onclick="$('#ck').textContent=S.key">Show</button> <button class="btn alt" onclick="navigator.clipboard&&navigator.clipboard.writeText(S.key).then(()=>alert('Code copied.'))">Copy</button>
+ <p><label><input type="checkbox" id="cl" style="width:auto;min-height:0" ${S.cloud?'checked':''}> Back up my data to the cloud (people, availability, reminders, settings)</label></p><p id="cloudMsg" class="mut"></p>
+ <label for="rcode">Use a code from another device</label><input id="rcode" placeholder="Paste your code"><button class="btn alt" style="margin-top:8px" onclick="restoreCode()">Restore here</button>`;
+ $('#cl').onchange=e=>{S.cloud=e.target.checked;persist();if(S.cloud)vaultPush()}}
+function popup(h){$('#dlg').innerHTML=h+'<p style="margin-top:14px"><button class="btn alt" onclick="document.getElementById(\'dlg\').close()">Close</button></p>';$('#dlg').showModal()}
+function respond(eid,aid){const ev=S.events.find(e=>e.id===eid),a=ev.acts.find(x=>x.id===aid);popup(`<h3>${esc(a.title)}</h3><small>${a.s}-${a.e}</small><label for="n${aid}">Your name</label><input id="n${aid}" autocomplete="name"><label for="ro${aid}">Which role?</label><select id="ro${aid}"><option value="">Any role</option>${roles(a).map(r=>`<option value="${r.id}">${esc(r.name)} (${Math.max(0,r.need-rfill(a,r))} still needed)</option>`).join('')}</select><div class="row" style="margin-top:12px"><button class="btn yes" onclick="rsvp('${eid}','${aid}','yes')">Yes, I can serve</button><button class="btn no" onclick="document.getElementById('w${aid}').hidden=false">No, I cannot serve</button></div><div id="w${aid}" hidden><label for="r${aid}">Would you like to let us know why? (Optional)</label><select id="r${aid}"><option value="">Prefer not to say</option><option>Unavailable at that time</option><option>Work or study</option><option>Family commitments</option><option>Health or personal</option><option>Already committed elsewhere</option><option>Other</option></select><button class="btn no" style="margin-top:12px" onclick="rsvp('${eid}','${aid}','no')">Send my answer</button></div>`)}
+function cp(u){(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>alert('Link copied.')).catch(()=>prompt('Copy this link:',u))}
+function nsh(code){const ev=allEvents().find(e=>(e.srv||e.rid)===code);navigator.share({title:ev?ev.name:'Event',url:base()+'#e='+code}).catch(()=>{})}
+function shareDlg(code){const ev=allEvents().find(e=>(e.srv||e.rid)===code),nm=ev?ev.name:(D0&&D0.i===code?D0.n:'Event'),u=base()+'#e='+code,t=nm+' - RSVP here',e=encodeURIComponent,L=(c,h,l)=>`<a class="btn ${c}" target="_blank" rel="noopener" href="${h}">${l}</a>`;
+ popup(`<h3>Share</h3><p style="word-break:break-all"><small>${esc(u)}</small></p><div class="row"><button class="btn" onclick="cp('${u}')">Copy link</button>${L('yes','https://wa.me/?text='+e(t+'\n'+u),'WhatsApp')}${L('alt','mailto:?subject='+e(nm)+'&body='+e(t+'\n'+u),'Email')}${L('alt','https://www.facebook.com/sharer/sharer.php?u='+e(u),'Facebook')}${L('alt','https://twitter.com/intent/tweet?text='+e(t)+'&url='+e(u),'X')}${L('alt','https://t.me/share/url?url='+e(u)+'&text='+e(t),'Telegram')}${navigator.share?`<button class="btn alt" onclick="nsh('${code}')">More…</button>`:''}</div>`)}
+function LV(go){const f=window._lv;document.getElementById('dlg').close();if(go&&f)f()}
+function leaveAsk(ev,cont){window._lv=cont;popup(`<h3>Before you leave</h3><p>“${esc(ev.name)}” is still a draft. Publish it so people can see it and RSVP, or save it as a draft and finish later.</p><div class="row"><button class="btn" onclick="S.events.find(e=>e.id==='${ev.id}').status='published';note('Event ${esc(ev.name).replace(/'/g,'')} is now published','event');LV(1)">Publish now</button><button class="btn alt" onclick="save();LV(1)">Save as draft</button></div>`)}
+addEventListener('beforeunload',e=>{const ev=S.events.find(x=>x.id===cur);if($('#detail').classList.contains('on')&&ev&&(ev.status||'draft')==='draft'){e.preventDefault();e.returnValue=''}});
+function logoFB(i){i.style.display='none'}
+function countUp(el,to){if(!el)return;to=+to||0;if(matchMedia('(prefers-reduced-motion:reduce)').matches){el.textContent=to;return}const t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/900);el.textContent=Math.round(to*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(f)})(t0)}
+function homeStats(){const A=allEvents().filter(isUp);let sp=0,yy=0;A.forEach(e=>{const t=sm(e);sp+=Math.max(0,t.need-t.fill);yy+=t.fill});[['s1',A.length],['s2',sp],['s3',yy]].forEach(x=>countUp($('#'+x[0]),x[1]))}
+const IO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');IO.unobserve(e.target)}}),{threshold:.06});
+const rvx=c=>{c.classList.add('rv');IO.observe(c)};
+new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType!==1)return;if(n.matches('.card'))rvx(n);n.querySelectorAll('.card').forEach(rvx);n.querySelectorAll('[data-n]').forEach(x=>countUp(x,x.dataset.n))}))).observe($('main'),{childList:true,subtree:true});
+$$('main .card').forEach(rvx);
+function pick(cb,mx){const i=document.createElement('input');i.type='file';i.accept='image/*';i.onchange=()=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,(mx||480)/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',.72))};im.src=r.result};r.readAsDataURL(f)};i.click()}
+const av=(src,sz)=>src?`<img src="${src}" alt="" style="width:${sz}px;height:${sz}px;border-radius:50%;object-fit:cover">`:`<span style="font-size:${sz*.7}px">👤</span>`;
+function evImg(id){pick(d=>{S.events.find(e=>e.id===id).img=d;save();detail(id)},1000)}
+const roles=a=>a.roles||[{id:'r0',name:a.role||a.title,need:a.need}];
+const ensureRoles=a=>{if(!a.roles)a.roles=roles(a)},syncNeed=a=>{a.need=a.roles.reduce((x,r)=>x+r.need,0)};
+const rfill=(a,r)=>a.roles?a.people.filter(p=>p.r==='yes'&&p.role===r.id).length:cov(a).y;
+function roleLines(a){return '<div style="margin:8px 0">'+roles(a).map(r=>{const f=rfill(a,r);return `<div style="margin:6px 0"><b>${esc(r.name)}</b> <small>${f} of ${r.need}</small><div class="bar"><i style="width:${Math.min(100,f/r.need*100)}%"></i></div></div>`}).join('')+'</div>'}
+function roleEditor(ev,a){return `<details style="margin-top:8px"><summary><b>Edit roles and headcount (leaders)</b></summary>${roles(a).map(r=>`<div class="row" style="align-items:end;margin-top:8px"><label>${esc(r.name)}<input id="nr${a.id}_${r.id}" type="number" min="1" value="${r.need}"></label><button class="btn" onclick="setRole('${ev.id}','${a.id}','${r.id}')">Update</button><button class="btn alt" onclick="delRole('${ev.id}','${a.id}','${r.id}')">Remove</button></div>`).join('')}<label for="an${a.id}">Add a role</label><div class="row"><input id="an${a.id}" placeholder="e.g. Greeter"><input id="ac${a.id}" type="number" min="1" value="1" aria-label="Volunteers needed"><button class="btn" onclick="addRole('${ev.id}','${a.id}')">Add role</button></div></details>`}
+const fa=(eid,aid)=>{const ev=S.events.find(e=>e.id===eid);return[ev,ev.acts.find(x=>x.id===aid)]};
+function setRole(eid,aid,rid){const[ev,a]=fa(eid,aid);ensureRoles(a);const r=a.roles.find(x=>x.id===rid),n=Math.max(1,+$('#nr'+aid+'_'+rid).value||1);if(n===r.need)return;note('Headcount for '+r.name+' ('+a.title+', '+ev.name+') changed from '+r.need+' to '+n,'event');r.need=n;syncNeed(a);save();detail(eid)}
+function delRole(eid,aid,rid){const[ev,a]=fa(eid,aid);ensureRoles(a);if(a.roles.length<2){alert('An activity needs at least one role.');return}a.roles=a.roles.filter(x=>x.id!==rid);syncNeed(a);note('A role was removed from '+a.title+' ('+ev.name+')','event');save();detail(eid)}
+function addRole(eid,aid){const[ev,a]=fa(eid,aid),nm=$('#an'+aid).value.trim(),n=Math.max(1,+$('#ac'+aid).value||1);if(!nm){$('#an'+aid).focus();return}ensureRoles(a);a.roles.push({id:'r'+Math.random().toString(36).slice(2,6),name:nm,need:n});syncNeed(a);note('Role added: '+nm+' x'+n+' for '+a.title+' ('+ev.name+')','event');save();detail(eid)}
+function setNeed(id,aid){const ev=S.events.find(e=>e.id===id),a=ev.acts.find(x=>x.id===aid),n=Math.max(1,+$('#nn'+aid).value||1);if(n===a.need)return;note('Headcount for '+a.title+' ('+ev.name+') changed from '+a.need+' to '+n,'event');a.need=n;save();detail(id)}
+let gtmp='';
+function avail(){$('#myn').value=S.me.n||'';$('#prof').innerHTML=av(S.me.img,72);
+ $('#myn').onchange=e=>{S.me.n=e.target.value.trim();save()};$('#myp').onclick=()=>pick(d=>{S.me.img=d;save();avail()});days()}
+function days(){const st=['','yes','no'],lab={'':'—',yes:'Free',no:'Busy'},t0=new Date();t0.setHours(0,0,0,0);const end=new Date(t0);end.setDate(end.getDate()+61);
+ const ky=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');let h='';
+ for(let m=new Date(t0.getFullYear(),t0.getMonth(),1);m<=end;m.setMonth(m.getMonth()+1)){
+  h+=`<div class="card"><h3>${m.toLocaleDateString('en-GB',{month:'long',year:'numeric'})}</h3><div class="days">`+['M','T','W','T','F','S','S'].map(x=>`<small style="text-align:center">${x}</small>`).join('');
+  for(let i=0;i<(m.getDay()+6)%7;i++)h+='<span></span>';
+  const n=new Date(m.getFullYear(),m.getMonth()+1,0).getDate();
+  for(let d=1;d<=n;d++){const dt=new Date(m.getFullYear(),m.getMonth(),d),k=ky(dt),ok=dt>=t0&&dt<=end,v=S.avail[k]||'';
+   h+=`<button ${ok?'':'disabled style="opacity:.3"'} data-k="${k}" data-s="${v}" aria-label="${dt.toDateString()}: ${lab[v]}">${d}<br><small>${lab[v]}</small></button>`}
+  h+='</div></div>'}
+ $('#months').innerHTML=h;
+ $$('#months button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;let v=st[(st.indexOf(S.avail[k]||'')+1)%3];if(v)S.avail[k]=v;else delete S.avail[k];save();days()})}
+$('#saveAv').onclick=()=>{if(!S.me.n){$('#myn').focus();alert('Please add your name first.');return}
+ const k=Object.keys(S.avail),f=k.filter(x=>S.avail[x]==='yes').length,b=k.length-f,ch=new Set([...k,...Object.keys(S.snap)].filter(x=>S.avail[x]!==S.snap[x])).size;
+ if(!ch){alert('No changes since your last save.');return}
+ const t=S.me.n+' updated their availability: '+f+' free day(s), '+b+' busy day(s), '+ch+' change(s).';S.snap={...S.avail};note(t,'avail');
+ const w=S.em.w?wnum(S.em.w):'';$('#avDone').innerHTML=`<div class="card"><b>Saved ✅</b><p>${S.em.admin?'An email has been sent to the admin.':'Add an admin email in Admin settings to send emails.'}</p>${w?`<a class="btn yes" target="_blank" rel="noopener" href="https://wa.me/${w}?text=${encodeURIComponent(t)}">Tell the admin on WhatsApp</a>`:'<small>Add the admin WhatsApp number in Admin settings to show the WhatsApp button.</small>'}</div>`;confetti()};
+function grList(){$('#grList').innerHTML=S.groups.length?S.groups.map((g,i)=>`<p>${g.img?`<img src="${g.img}" alt="" style="width:48px;height:48px;border-radius:12px;object-fit:cover;vertical-align:middle">`:'👥'} <b>${esc(g.n)}</b> <button class="btn alt" style="padding:4px 14px;min-height:36px" onclick="S.groups.splice(${i},1);save();grList()">Remove</button></p>`).join(''):'<small>No groups yet.</small>'}
+$('#gp').onclick=()=>pick(d=>{gtmp=d;$('#gp').textContent='Picture chosen ✓'});
+$('#gs').onclick=()=>{const n=$('#gn').value.trim();if(!n){$('#gn').focus();return}S.groups.push({n,img:gtmp});gtmp='';$('#gn').value='';$('#gp').textContent='Choose picture';save();grList()};
+const CS=[{t:'Sunday welcome team',s:['Leader creates the event and adds a Welcome team activity needing 6 volunteers.','Publishes it and shares it to the WhatsApp group.','4 say Yes, 1 says No, 1 has not replied. The dashboard shows 2 still needed.','Leader messages the unanswered volunteer. Two more people say Yes and the team is full 🎉'],b:[['Welcome team',6,4,6]]},
+{t:'Community celebration',s:['Four activities are built with times and headcounts.','Dinner shows 5 of 8. The dashboard flags 3 needed.','Fewer guests are expected, so the leader edits Dinner headcount from 8 to 6.','Status updates to 5 of 6 and a reminder goes to people who have not replied.'],b:[['Reception',4,3,4],['Audio and video',2,2,2],['Games',4,4,4],['Dinner',6,5,6]]},
+{t:'Last-minute decline',s:['A confirmed volunteer cannot make it and says No with no reason given.','The position reopens and a shortage is flagged straight away.','The leader checks availability, then messages two free volunteers.','One says Yes. The gap closes and the admin is notified by email.'],b:[['Kitchen',3,3,2],['Kitchen (after)',3,2,3]]}];
+function cases(){$('#caseList').innerHTML=CS.map(c=>`<div class="card"><h3>${c.t}</h3><span class="tag" style="background:var(--violet)">Illustrative example</span><ol>${c.s.map(x=>`<li>${x}</li>`).join('')}</ol>${c.b.map(r=>`<p><b>${r[0]}</b> <small>${r[2]} of ${r[1]} before, ${r[3]} after</small></p><div class="bar"><i data-w="${r[3]/r[1]*100}" style="width:${r[2]/r[1]*100}%"></i></div>`).join('')}</div>`).join('');
+ setTimeout(()=>$$('#caseList .bar i').forEach(i=>i.style.width=i.dataset.w+'%'),600)}
+function loadEx(){if(S.events.some(e=>e.ex)){alert('Example already loaded.');return}
+ const P=(n,r)=>({n:'Example '+n,r,reason:''}),d=new Date();d.setDate(d.getDate()+14);
+ S.events.push({id:'ex'+Date.now(),ex:1,name:'Example: Community celebration',date:d.toISOString().slice(0,10),venue:'Church hall',status:'published',acts:[
+ {id:'x1',title:'Reception',s:'14:00',e:'15:00',need:4,role:'Welcome team',people:[P('Ada','yes'),P('Ben','yes'),P('Cara','yes')]},
+ {id:'x2',title:'Dinner',s:'17:00',e:'18:00',need:6,role:'Serving team',people:[P('Dan','yes'),P('Eve','yes'),P('Finn','no'),P('Gus','yes')]}]});
+ ['Ada','Ben','Cara','Dan','Eve','Finn','Gus','Hana'].forEach(n=>S.people.push({n:'Example '+n,w:'',e:n.toLowerCase()+'@example.invalid',r:'Volunteer',ex:1}));
+ save();alert('Example loaded. Open Events and the Admin tab to explore.')}
+function rmEx(){S.events=S.events.filter(e=>!e.ex);S.people=S.people.filter(p=>!p.ex);save();alert('Example data removed.')}
+dueCheck();boot();
+</script>
+</body>
+</html>
